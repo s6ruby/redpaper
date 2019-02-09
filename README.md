@@ -238,7 +238,7 @@ end
 def kill
   assert msg.sender == @creator
   # wait 24 weeks after final contract state before allowing contract destruction
-  assert (state.expired_refund? || state.successful?) && @complete_at + 24.weeks < block.timestamp
+  assert (@state.expired_refund? || @state.successful?) && @complete_at + 24.weeks < block.timestamp
 
   # note: creator gets all money that hasn't be claimed
   selfdestruct( msg.sender )
