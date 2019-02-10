@@ -94,7 +94,7 @@ end
 # Satoshi Dice Contract
 
 Bet = Struct.new( user:   Address(0), 
-                  block:  Block(0), 
+                  block:  0, 
                   cap:    0, 
                   amount: 0 )
 
