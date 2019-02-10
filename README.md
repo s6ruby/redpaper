@@ -256,9 +256,9 @@ Send your questions and comments to the ruby-talk mailing list. Thanks!
 
 ## References
 
-- [1] - mruby programming language, see <https://mruby.org>
-- [2] - ruby programming language, see <https://www.ruby-lang.org> 
-- [3] - solidity programming language, see <https://solidity.readthedocs.io>
-- [4] - vyper programming language, see <https://vyper.readthedocs.io>
-- [5] - yul intermediate language for the EVM (ethereum virtual machine) assembly code, see the Yul section in the solidity programming language reference  
+1. mruby programming language, see <https://mruby.org>
+2. ruby programming language, see <https://www.ruby-lang.org> 
+3. solidity programming language, see <https://solidity.readthedocs.io>
+4. vyper programming language, see <https://vyper.readthedocs.io>
+5. yul intermediate language for the EVM (ethereum virtual machine) assembly code, see the Yul section in the solidity programming language reference  
 
