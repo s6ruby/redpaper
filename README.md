@@ -93,8 +93,8 @@ end
 ################################
 # Satoshi Dice Contract
 
-Bet = Struct.new( user:   Address.zero, 
-                  block:  Block.zero, 
+Bet = Struct.new( user:   Address(0), 
+                  block:  Block(0), 
                   cap:    0, 
                   amount: 0 )
 
@@ -169,7 +169,7 @@ end
 State = Enum.new( :fundraising, :expired_refund, :successful )
 
 Contribution = Struct.new( amount:      0, 
-                           contributor: Address.zero )
+                           contributor: Address(0) )
 
 FundingReceived = Event.new( :address, :amount, :current_total )
 WinnerPaid      = Event.new( :winner_address )
