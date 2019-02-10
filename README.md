@@ -2,7 +2,7 @@ _The Ruby Programming Language for Contract / Transaction Scripts on the Blockch
 
 # sruby - Small, Smart, Secure, Safe, Solid & Sound (S6) Ruby
 
-sruby is a subset of mruby that is a subset of "classic" ruby.
+sruby is a subset of mruby [1] that is a subset of "classic" ruby [2].
 
 
 ## What's missing and why?
@@ -251,3 +251,11 @@ end
 ## Request for Comments (RFC)
 
 Send your questions and comments to the ruby-talk mailing list. Thanks!
+
+
+
+## References
+
+[1] - mruby, see <https://mruby.org>
+[2] - "classic" ruby, see <https://www.ruby-lang.org> 
+
