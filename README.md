@@ -26,7 +26,7 @@ You can cross-compile (transpile) contract scripts (*) to:
 
 - Solidity [3] - JavaScript-like contract scripts
 - Vyper [4] - Python-like contract scripts
-- EVM (Ethereum Virtual Machine) Assembly [5]
+- Yul [5] - EVM (Ethereum Virtual Machine) Assembly-like intermediate contract scripts 
 - and much much more
 
 
@@ -260,5 +260,5 @@ Send your questions and comments to the ruby-talk mailing list. Thanks!
 - [2] - ruby programming language, see <https://www.ruby-lang.org> 
 - [3] - solidity programming language, see <https://solidity.readthedocs.io>
 - [4] - vyper programming language, see <https://vyper.readthedocs.io>
-- [5] - EVM (ethereum virtual machine) assembly, see the Yul intermediate language section in the solidity programming language reference  
+- [5] - yul intermediate language for the EVM (ethereum virtual machine) assembly code, see the Yul section in the solidity programming language reference  
 
