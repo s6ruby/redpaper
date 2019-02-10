@@ -33,10 +33,11 @@ You can cross-compile (transpile) contract scripts (*) to:
 (*) in the future.
 
 
-## Yes, yes, yes - It's still "plain-vanilla" ruby
+## Yes, yes, yes - It's just "plain-vanilla" ruby
 
-Remember - the code is still and always will be "plain-vanilla" ruby
+Remember - the code is and always will be just "plain-vanilla" ruby
 that runs with "classic" ruby or mruby "out-of-the-box".
+
 
 
 ## Contract Samples
