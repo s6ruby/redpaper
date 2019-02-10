@@ -93,7 +93,10 @@ end
 ################################
 # Satoshi Dice Contract
 
-Bet = Struct.new( :user, :block, :cap, :amount )
+Bet = Struct.new( user:   Address.zero, 
+                  block:  Block.zero, 
+                  cap:    0, 
+                  amount: 0 )
 
 ## Fee (Casino House Edge) is 1.9%, that is, 19 / 1000
 FEE_NUMERATOR   = 19
@@ -165,7 +168,8 @@ end
 
 State = Enum.new( :fundraising, :expired_refund, :successful )
 
-Contribution = Struct.new( :amount, :contributor )
+Contribution = Struct.new( amount:      0, 
+                           contributor: Address.zero )
 
 FundingReceived = Event.new( :address, :amount, :current_total )
 WinnerPaid      = Event.new( :winner_address )
