@@ -15,7 +15,7 @@ Less is more. The golden rule of secure code is keep it simple, stupid.
 - NO re-entrance - auto-magic protection on function calls
 - NO floating point numbers or arithmetic
 - NO overflow & underflow in numbers - auto-magic "safe-math" protection
-- NO null (`nil`) - all variables, structs and mappings have default (zero) values 
+- NO null (`nil`) - all variables, structs and hash mappings have default (zero) values 
 - and much much more
 
 
