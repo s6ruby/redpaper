@@ -269,7 +269,7 @@ Proposal = Struct.new( vote_count: 0 )
 def initialize( num_proposals )
   @chairperson = msg.sender
   @voters      = Mapping.of( Address => Voter )
-  @proposals   = Array.of( Proposal, size: num_proposals )
+  @proposals   = Array.of( Proposal, num_proposals )
 
   @voters[@chairperson].weight = 1
 end
