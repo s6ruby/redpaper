@@ -49,7 +49,7 @@ that runs with "classic" ruby or mruby "out-of-the-box".
 ############################
 # Greeter Contract 
 
-def initialize( greeting )
+def setup( greeting )
   @owner    = msg.sender
   @greeting = greeting
 end
@@ -70,7 +70,7 @@ end
 #######################
 # Token Contract
 
-def initialize( initial_supply )
+def setup( initial_supply )
   @balance_of = Mapping.of( Address => Money )
   @balance_of[ msg.sender] = initial_supply
 end
@@ -109,7 +109,7 @@ MINIMUM_BET = 100
 BetPlaced = Event.new( :id, :user, :cap, :amount )
 Roll      = Event.new( :id, :rolled )
 
-def initialize
+def setup
   @owner   = msg.sender
   @counter = 0
   @bets    = Mapping.of( Integer => Bet )
@@ -176,7 +176,7 @@ FundingReceived = Event.new( :address, :amount, :current_total )
 WinnerPaid      = Event.new( :winner_address )
 
 
-def initialize(
+def setup(
       time_in_hours_for_fundraising,
       campaign_url,
       fund_recipient,
@@ -266,7 +266,7 @@ Voter    = Struct.new( weight:   0,
 Proposal = Struct.new( vote_count: 0 )
 
 ## Create a new ballot with $(num_proposals) different proposals.
-def initialize( num_proposals )
+def setup( num_proposals )
   @chairperson = msg.sender
   @voters      = Mapping.of( Address => Voter )
   @proposals   = Array.of( Proposal, num_proposals )
