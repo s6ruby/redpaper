@@ -327,8 +327,8 @@ end
 
 ## Types
 
-[Value Types](#value_types) •
-[Reference Types](#reference_types)
+[Value Types](#value-types) •
+[Reference Types](#reference-types)
 
 
 
