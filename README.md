@@ -324,6 +324,137 @@ end
 ```
 
 
+
+## Types
+
+[Value Types](#value_types) •
+[Reference Types](#reference_types)
+
+
+
+### Value Types
+
+Bool •
+Integer (Money • Timestamp • Timedelta • Enum) •
+Address •
+String •
+Byte Array / Bytes
+
+
+#### Bool
+
+Class: `Bool`
+
+Values: true | false
+
+Zero: false
+
+``` ruby
+Bool.zero   #=> false
+```
+
+#### Integer
+
+Class: `Integer`
+
+Zero: 0
+
+``` ruby
+Integer.zero   #=> false
+```
+
+**Integer Types**
+
+Money • Timestamp • Timedelta • Enum
+
+#### Money (Integer)
+
+Money Units
+
+#### Timestamp (Integer)
+
+Time Units
+
+``` ruby
+Timestamp.now   #=> 1551122309
+```
+
+#### Timedelta (Integer)
+
+
+#### Enum (Integer)
+
+
+
+
+#### Address
+
+Class: `Address`
+
+Zero: `0x0000` or `0x0` or `Address(0)`
+
+
+Example:
+
+``` ruby
+owner = '0x0000'  # or
+owner = Address(0)
+```
+
+
+#### String
+
+#### Byte Array / Bytes
+
+
+
+
+
+### Reference Types
+
+[Array](#array)  •
+[Struct](#struct)  •
+[Mapping](#mapping)
+
+
+
+#### Array
+
+Class Builder: `Safe::SafeArray`
+
+Example:
+
+``` ruby
+Array.of()
+```
+
+#### Struct
+
+Class Builder: `Safe::SafeStruct` or `Safe::Struct`
+
+#### Mapping
+
+Class Builder: `Safe::SafeHash`
+
+
+
+
+## Event Logging
+
+...
+
+
+## Storage
+
+The contract's state gets stored in contract storage.
+
+...
+
+
+
+
+
+
 ## Request for Comments (RFC)
 
 Send your questions and comments to the ruby-talk mailing list. Thanks!
