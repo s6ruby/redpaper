@@ -93,10 +93,11 @@ end
 ################################
 # Satoshi Dice Contract
 
-Bet = Struct.new( user:   Address(0), 
-                  block:  0, 
-                  cap:    0, 
-                  amount: 0 )
+struct :Bet,
+         user:   Address(0), 
+         block:  0, 
+         cap:    0, 
+         amount: 0
 
 ## Fee (Casino House Edge) is 1.9%, that is, 19 / 1000
 FEE_NUMERATOR   = 19
@@ -106,8 +107,8 @@ MAXIMUM_CAP = 2**16   # 65_536 = 2^16 = 2 byte/16 bit
 MAXIMUM_BET = 100_000_000
 MINIMUM_BET = 100
 
-BetPlaced = Event.new( :id, :user, :cap, :amount )
-Roll      = Event.new( :id, :rolled )
+event :BetPlaced, :id, :user, :cap, :amount
+event :Roll,      :id, :rolled
 
 def setup
   @owner   = msg.sender
@@ -167,13 +168,14 @@ end
 ##############################
 # Crowd Funder Contract
 
-State = Enum.new( :fundraising, :expired_refund, :successful )
+enum :State, :fundraising, :expired_refund, :successful
 
-Contribution = Struct.new( amount:      0, 
-                           contributor: Address(0) )
+struct :Contribution,
+         amount:      0, 
+         contributor: Address(0)
 
-FundingReceived = Event.new( :address, :amount, :current_total )
-WinnerPaid      = Event.new( :winner_address )
+event :FundingReceived, :address, :amount, :current_total
+event :WinnerPaid,      :winner_address
 
 
 def setup(
@@ -258,12 +260,14 @@ end
 #########################
 # Ballot Contract
 
-Voter    = Struct.new( weight:   0,
-                       voted:    false,
-                       vote:     0,
-                       delegate: Address(0))
+struct :Voter,
+          weight:   0,
+          voted:    false,
+          vote:     0,
+          delegate: Address(0)
 
-Proposal = Struct.new( vote_count: 0 )
+struct :Proposal, 
+          vote_count: 0
 
 ## Create a new ballot with $(num_proposals) different proposals.
 def setup( num_proposals )
