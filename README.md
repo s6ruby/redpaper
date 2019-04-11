@@ -72,7 +72,7 @@ end
 # Token Contract
 
 def setup( initial_supply )
-  @balance_of = Mapping.of( Address => Money )
+  @balance_of = Mapping.of( Address => Money ).new   # or Mapping‹Address→Money›.new 
   @balance_of[ msg.sender] = initial_supply
 end
 
@@ -114,7 +114,7 @@ event :Roll,      :id, :rolled
 def setup
   @owner   = msg.sender
   @counter = 0
-  @bets    = Mapping.of( Integer => Bet )
+  @bets    = Mapping.of( Integer => Bet ).new   # or Mapping‹Integer→Bet›.new
 end
 
 def bet( cap )
@@ -194,7 +194,7 @@ def setup(
   @state            = State.fundraising
   @total_raised     = 0
   @complete_at      = 0
-  @contributions    = Array.of( Contribution )
+  @contributions    = Array.of( Contribution ).new  # or Array‹Contribution›.new or Contribution[].new
 end
 
 
@@ -273,8 +273,8 @@ struct :Proposal,
 ## Create a new ballot with $(num_proposals) different proposals.
 def setup( num_proposals )
   @chairperson = msg.sender
-  @voters      = Mapping.of( Address => Voter )
-  @proposals   = Array.of( Proposal, num_proposals )
+  @voters      = Mapping.of( Address => Voter ).new       # or Mapping‹Address→Voter›.new
+  @proposals   = Array.of( Proposal, num_proposals ).new  # or Proposal[ num_proposals ].new
 
   @voters[@chairperson].weight = 1
 end
