@@ -130,7 +130,7 @@ MINIMUM_BET = 100
 event :BetPlaced, id: Nat, user: Address, cap: Nat, amount: Money
 event :Roll,      id: Nat, rolled: Nat
 
-storage   owner     Address,
+storage   owner:    Address,
           counter:  Nat,
           bets:     mapping( Nat, Bet ) 
                     ## or Mapping.of( Nat => Bet )
