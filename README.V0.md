@@ -41,60 +41,42 @@ that runs with "classic" ruby or mruby "out-of-the-box".
 
 
 
-**NEW IN 2023**  Let's update the syntax / style for compatibility with the big brother / sister - rubidity! 
-
-
-Work-In-Progress  - New to Rubidity?  See [**Rubidity - Ruby for Layer 1 (L1) Contracts / Protocols with "Off-Chain" Indexer**  »](https://github.com/s6ruby/rubidity)
-
-
-
 ## Contract Samples
 
-### Hello, World! - Greeter
 
+**Hello, World! - Greeter**
 
 ``` ruby
 ############################
 # Greeter Contract 
 
-storage owner:    Address,
-        greeting: String
-
-# @sig (String)
-def setup( greeting: )
+def setup( greeting )
   @owner    = msg.sender
   @greeting = greeting
 end
 
-# @sig () => String
 def greet
   @greeting
 end
 
-# @sig ()
 def kill
   selfdestruct( msg.sender )  if msg.sender == @owner
 end
 ```
 
 
-### Mint Your Own Money - Minimal Viable Token
+**Mint Your Own Money - Minimal Viable Token**
 
 ``` ruby
 #######################
 # Token Contract
 
-storage balance_of:  mapping( Address, Money )
-                     # or Mapping.of( Address => Money ) 
-                     # or Mapping‹Address→Money›
-   
-# @sig (Money)
 def setup( initial_supply )
+  @balance_of = Mapping.of( Address => Money ).new   # or Mapping‹Address→Money›.new 
   @balance_of[ msg.sender] = initial_supply
 end
 
-# @sig (Address, Money) => Bool
-def transfer( to:, value: )
+def transfer( to, value )
   assert @balance_of[ msg.sender ] >= value
   assert @balance_of[ to ] + value >= @balance_of[ to ]
 
@@ -106,18 +88,17 @@ end
 ```
 
 
-
-### Win x65 000 - Roll the (Satoshi) Dice
+**Win x65 000 - Roll the (Satoshi) Dice**
 
 ``` ruby
 ################################
 # Satoshi Dice Contract
 
 struct :Bet,
-         user:   Address, 
-         block:  Nat,    # note: Nat(ural Number) type same as UInt (0-) 
-         cap:    Nat, 
-         amount: Money   # note: Money type same as UInt
+         user:   Address(0), 
+         block:  0, 
+         cap:    0, 
+         amount: 0
 
 ## Fee (Casino House Edge) is 1.9%, that is, 19 / 1000
 FEE_NUMERATOR   = 19
@@ -127,22 +108,16 @@ MAXIMUM_CAP = 2**16   # 65_536 = 2^16 = 2 byte/16 bit
 MAXIMUM_BET = 100_000_000
 MINIMUM_BET = 100
 
-event :BetPlaced, id: Nat, user: Address, cap: Nat, amount: Money
-event :Roll,      id: Nat, rolled: Nat
+event :BetPlaced, :id, :user, :cap, :amount
+event :Roll,      :id, :rolled
 
-storage   owner     Address,
-          counter:  Nat,
-          bets:     mapping( Nat, Bet ) 
-                    ## or Mapping.of( Nat => Bet )
-                    ## or Mapping‹Nat→Bet›  
-
-# @sig ()
 def setup
-  @owner  = msg.sender
+  @owner   = msg.sender
+  @counter = 0
+  @bets    = Mapping.of( Integer => Bet ).new   # or Mapping‹Integer→Bet›.new
 end
 
-# @sig (Nat) 
-def bet( cap: )
+def bet( cap )
   assert cap >= 1 && cap <= MAXIMUM_CAP
   assert msg.value >= MINIMUM_BET && msg.value <= MAXIMUM_BET
 
@@ -151,8 +126,7 @@ def bet( cap: )
   log BetPlaced.new( @counter, msg.sender, cap, msg.value )
 end
 
-# @sig (Nat)
-def roll( id: )
+def roll( id )
   bet = @bets[id]
 
   assert msg.sender == bet.user
@@ -179,11 +153,9 @@ def roll( id: )
   @bets.delete( id )
 end
 
-# @sig ()
 def fund
 end
 
-# @sig ()
 def kill
   assert msg.sender == @owner
   selfdestruct( @owner )
@@ -191,9 +163,7 @@ end
 ```
 
 
-
-
-### Kick Start Your Project with a Crowd Funder
+**Kick Start Your Project with a Crowd Funder**
 
 ``` ruby
 ##############################
@@ -357,7 +327,6 @@ def winning_proposal
   winning_proposal
 end
 ```
-
 
 
 
