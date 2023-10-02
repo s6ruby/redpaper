@@ -43,9 +43,11 @@ that runs with "classic" ruby or mruby "out-of-the-box".
 
 **NEW IN 2023** 
 
-Let's update the syntax / style for compatibility with the big brother / sister - Rubidity!  Bonus - Yes, you can. It's just Ruby. [**Run the sample contracts from the Red Paper with Rubidity and Simulacrum »**](https://github.com/s6ruby/rubidity/tree/master/redpaper) 
+Let's update the syntax / style for compatibility with the big brother / sister - Rubidity! 
 
 New to Rubidity?  See [**Rubidity - Ruby for Layer 1 (L1) Contracts / Protocols with "Off-Chain" Indexer**  »](https://github.com/s6ruby/rubidity)
+ 
+Bonus - Yes, you can. It's just Ruby. [**Run the sample contracts from the Red Paper with Rubidity and Simulacrum »**](https://github.com/s6ruby/rubidity/tree/master/redpaper) 
 
 
 
