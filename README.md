@@ -41,10 +41,12 @@ that runs with "classic" ruby or mruby "out-of-the-box".
 
 
 
-**NEW IN 2023**  Let's update the syntax / style for compatibility with the big brother / sister - rubidity! 
+**NEW IN 2023** 
 
+Let's update the syntax / style for compatibility with the big brother / sister - Rubidity!  Bonus - Yes, you can. It's just Ruby. [**Run the sample contracts from the Red Paper with Rubidity and Simulacrum »**](https://github.com/s6ruby/rubidity/tree/master/redpaper) 
 
-Work-In-Progress  - New to Rubidity?  See [**Rubidity - Ruby for Layer 1 (L1) Contracts / Protocols with "Off-Chain" Indexer**  »](https://github.com/s6ruby/rubidity)
+New to Rubidity?  See [**Rubidity - Ruby for Layer 1 (L1) Contracts / Protocols with "Off-Chain" Indexer**  »](https://github.com/s6ruby/rubidity)
+
 
 
 
@@ -388,7 +390,8 @@ end
 
 
 
-## Types
+
+## Types  (Work-In-Progress)
 
 [Value Types](#value-types) •
 [Reference Types](#reference-types)
