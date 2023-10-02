@@ -285,7 +285,7 @@ end
 ```
 
 
-**Liquid / Delegative Democracy - Let's Vote (or Delegate Your Vote) on a Proposal**
+### Liquid / Delegative Democracy - Let's Vote (or Delegate Your Vote) on a Proposal
 
 ``` ruby
 #########################
