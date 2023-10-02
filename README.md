@@ -84,19 +84,17 @@ end
 #######################
 # Token Contract
 
-storage balance_of:  mapping( Address, Money )
-                     # or Mapping.of( Address => Money ) 
-                     # or Mapping‹Address→Money›
-   
-# @sig (Money)
-def setup( initial_supply )
+storage balance_of:  Mapping( Address, UInt )
+                     
+# @sig (UInt)
+def setup( initial_supply: )
   @balance_of[ msg.sender] = initial_supply
 end
 
-# @sig (Address, Money) => Bool
+# @sig (Address, UInt) => Bool
 def transfer( to:, value: )
-  assert @balance_of[ msg.sender ] >= value
-  assert @balance_of[ to ] + value >= @balance_of[ to ]
+  assert @balance_of[ msg.sender ] >= value, 'insufficient funds'
+  assert @balance_of[ to ] + value >= @balance_of[ to ], 'overflow - transfer value too big'
 
   @balance_of[ msg.sender ] -= value
   @balance_of[ to ]         += value
@@ -113,11 +111,18 @@ end
 ################################
 # Satoshi Dice Contract
 
+event :BetPlaced, id: UInt, user: Address, cap: UInt, amount: UInt
+event :Roll,      id: UInt, rolled: UInt
+
 struct :Bet,
          user:   Address, 
-         block:  Nat,    # note: Nat(ural Number) type same as UInt (0-) 
-         cap:    Nat, 
-         amount: Money   # note: Money type same as UInt
+         block:  UInt,  
+         cap:    UInt, 
+         amount: UInt  
+
+storage   owner:    Address,
+          counter:  UInt,
+          bets:     Mapping( UInt, Bet ) 
 
 ## Fee (Casino House Edge) is 1.9%, that is, 19 / 1000
 FEE_NUMERATOR   = 19
@@ -126,38 +131,33 @@ FEE_DENOMINATOR = 1000
 MAXIMUM_CAP = 2**16   # 65_536 = 2^16 = 2 byte/16 bit
 MAXIMUM_BET = 100_000_000
 MINIMUM_BET = 100
-
-event :BetPlaced, id: Nat, user: Address, cap: Nat, amount: Money
-event :Roll,      id: Nat, rolled: Nat
-
-storage   owner:    Address,
-          counter:  Nat,
-          bets:     mapping( Nat, Bet ) 
-                    ## or Mapping.of( Nat => Bet )
-                    ## or Mapping‹Nat→Bet›  
-
+                      
 # @sig ()
 def setup
   @owner  = msg.sender
 end
 
-# @sig (Nat) 
+# @sig (UInt) 
 def bet( cap: )
   assert cap >= 1 && cap <= MAXIMUM_CAP
   assert msg.value >= MINIMUM_BET && msg.value <= MAXIMUM_BET
 
   @counter += 1
   @bets[@counter] = Bet.new( msg.sender, block.number+3, cap, msg.value )
-  log BetPlaced.new( @counter, msg.sender, cap, msg.value )
+  
+  log BetPlaced, id: @counter, 
+                 user: msg.sender, 
+                 cap: cap, 
+                 amount: msg.value
 end
 
-# @sig (Nat)
+# @sig (UInt)
 def roll( id: )
   bet = @bets[id]
 
-  assert msg.sender == bet.user
-  assert block.number >= bet.block
-  assert block.number <= bet.block + 255
+  assert msg.sender == bet.user,  'only better can roll'
+  assert block.number >= bet.block, 'block before bet block; cannot roll'
+  assert block.number <= bet.block + 255,  'block beyond 255 blocks; cannot roll'
 
   ## "provable" fair - random number depends on
   ##  - blockhash (of block in the future - t+3)
@@ -175,7 +175,7 @@ def roll( id: )
      msg.sender.transfer( payout )
   end
 
-  log Roll.new( id, rolled )
+  log Roll, id: id, rolled: rolled
   @bets.delete( id )
 end
 
@@ -199,43 +199,53 @@ end
 ##############################
 # Crowd Funder Contract
 
+event :FundingReceived, address: Address, 
+                        amount: UInt, 
+                        current_total: UInt
+event :WinnerPaid, winner_address: Address
+
+
 enum :State, :fundraising, :expired_refund, :successful
 
 struct :Contribution,
-         amount:      0, 
-         contributor: Address(0)
+         amount:      UInt, 
+         contributor: Address
 
-event :FundingReceived, :address, :amount, :current_total
-event :WinnerPaid,      :winner_address
+storage   creator:          Address,
+          fund_recipient:   Address,
+          campaign_url:     String,
+          minimum_to_raise: UInt,
+          raise_by:         Timestamp,
+          state:            State,
+          total_raised:     UInt,
+          complete_at:      Timestamp,
+          contributions:    Array( Contribution ) 
 
-
+# @sig (Timedelta, String, Address, UInt)
 def setup(
-      time_in_hours_for_fundraising,
-      campaign_url,
-      fund_recipient,
-      minimum_to_raise )
+      time_in_hours_for_fundraising:,
+      campaign_url:,
+      fund_recipient:,
+      minimum_to_raise: )
 
   @creator          = msg.sender
   @fund_recipient   = fund_recipient   # note: creator may be different than recipient
   @campaign_url     = campaign_url
   @minimum_to_raise = minimum_to_raise # required to tip, else everyone gets refund
   @raise_by         = block.timestamp + (time_in_hours_for_fundraising * 1.hour )
-
   @state            = State.fundraising
-  @total_raised     = 0
-  @complete_at      = 0
-  @contributions    = Array.of( Contribution ).new  # or Array‹Contribution›.new or Contribution[].new
 end
 
 
-
+# @sig ()
 def pay_out
-  assert @state.successful?
+  assert @state.successful?,  'state must be set to successful for pay out'
 
   @fund_recipient.transfer( this.balance )
-  log WinnerPaid.new( @fund_recipient )
+  log WinnerPaid, winner_address: @fund_recipient
 end
 
+# @sig ()
 def check_if_funding_complete_or_expired
   if @total_raised > @minimum_to_raise
     @state = State.successful
@@ -247,14 +257,16 @@ def check_if_funding_complete_or_expired
   end
 end
 
-
+# @sig ()
 def contribute
-  assert @state.fundraising?
+  assert @state.fundraising?, 'state must be set to fundraising to contribute'
 
   @contributions.push( Contribution.new( msg.value, msg.sender ))
   @total_raised += msg.value
 
-  log FundingReceived.new( msg.sender, msg.value, @total_raised )
+  log FundingReceived, address: msg.sender, 
+                       amount: msg.value,
+                       current_total: @total_raised 
 
   check_if_funding_complete_or_expired()
 
@@ -262,9 +274,10 @@ def contribute
 end
 
 
-def refund( id )
-  assert @state.expired_refund?
-  assert @contributions.size > id && id >= 0 && @contributions[id].amount != 0
+# @sig (UInt)
+def refund( id: )
+  assert @state.expired_refund?, 'state must be set to expired_refund to refund'
+  assert @contributions.size > id && id >= 0 && @contributions[id].amount != 0,  'contribution id out-of-range'
 
   amount_to_refund = @contributions[id].amount
   @contributions[id].amount = 0
@@ -274,15 +287,18 @@ def refund( id )
   true
 end
 
+# @sig
 def kill
-  assert msg.sender == @creator
+  assert msg.sender == @creator,  'only creator can kill contract'
   # wait 24 weeks after final contract state before allowing contract destruction
-  assert (@state.expired_refund? || @state.successful?) && @complete_at + 24.weeks < block.timestamp
+  assert @state.expired_refund? || @state.successful?, 'state must be set to expired_refund'  
+  aasert @complete_at + 24.weeks < block.timestamp,  'complete_at time must be beyond 24 weeks'
 
   # note: creator gets all money that hasn't be claimed
   selfdestruct( msg.sender )
 end
 ```
+
 
 
 ### Liquid / Delegative Democracy - Let's Vote (or Delegate Your Vote) on a Proposal
@@ -292,36 +308,44 @@ end
 # Ballot Contract
 
 struct :Voter,
-          weight:   0,
-          voted:    false,
-          vote:     0,
-          delegate: Address(0)
+          weight:   UInt,     # weight is accumulated by delegation
+          voted:    Bool,     # if true, that person already voted
+          vote:     UInt,     # index of the voted proposal
+          delegate: Address   # person delegated to
 
 struct :Proposal, 
-          vote_count: 0
+          vote_count: UInt    # number of accumulated votes
+
+storage  chairperson: Address,
+         voters:      Mapping( Address, Voter ), 
+         proposals:   Array( Proposal )    
 
 ## Create a new ballot with $(num_proposals) different proposals.
-def setup( num_proposals )
+##   @sig [UInt]
+def constructor( num_proposals: )
   @chairperson = msg.sender
-  @voters      = Mapping.of( Address => Voter ).new       # or Mapping‹Address→Voter›.new
-  @proposals   = Array.of( Proposal, num_proposals ).new  # or Proposal[ num_proposals ].new
-
-  @voters[@chairperson].weight = 1
+  @proposals.length = num_proposals
+  
+  @voters[ @chairperson ].weight = 1
 end
 
 ## Give $(to_voter) the right to vote on this ballot.
 ## May only be called by $(chairperson).
-def give_right_to_vote( to_voter ) 
-   assert msg.sender == @chairperson && @voters[to_voter].voted? == false
+##  @sig [Address]
+def give_right_to_vote( to_voter: ) 
+   assert msg.sender == @chairperson, "only chairperson"
+   aasert @voters[to_voter].voted? == false, "voter already voted"
+     
    @voters[to_voter].weight = 1
 end
 
 ## Delegate your vote to the voter $(to).
-def delegate( to )
+##   @sig [Address]
+def delegate( to: )
   sender = @voters[msg.sender]  # assigns reference
   assert sender.voted? == false
 
-  while @voters[to].delegate != Address(0) && @voters[to].delegate != msg.sender do
+  while @voters[to].delegate != address(0) && @voters[to].delegate != msg.sender do
     to = @voters[to].delegate
   end
   assert to != msg.sender
@@ -337,7 +361,8 @@ def delegate( to )
 end
 
 ## Give a single vote to proposal $(to_proposal).
-def vote( to_proposal )
+##  @sig [UInt]
+def vote( to_proposal: )
   sender = @voters[msg.sender]
   assert sender.voted? == false && to_proposal < @proposals.length
   sender.voted = true
@@ -345,6 +370,7 @@ def vote( to_proposal )
   @proposals[to_proposal].vote_count += sender.weight
 end
 
+##  @sig [], :view, returns: UInt
 def winning_proposal
   winning_vote_count = 0 
   winning_proposal   = 0
@@ -357,6 +383,7 @@ def winning_proposal
   winning_proposal
 end
 ```
+
 
 
 
@@ -391,12 +418,12 @@ Bool.zero   #=> false
 
 #### Integer
 
-Class: `Integer`
+Class: `Int`
 
 Zero: 0
 
 ``` ruby
-Integer.zero   #=> false
+Int.zero   #=> false
 ```
 
 **Integer Types**
@@ -434,7 +461,7 @@ Example:
 
 ``` ruby
 owner = '0x0000'  # or
-owner = Address(0)
+owner = address(0)
 ```
 
 
@@ -456,28 +483,24 @@ owner = Address(0)
 
 #### Array
 
-Class Builder: `Safe::SafeArray`
 
 Example:
 
 ``` ruby
-Array.of()
+Array()
 ```
 
 #### Struct
 
-Class Builder: `Safe::SafeStruct` or `Safe::Struct`
 
 #### Mapping
-
-Class Builder: `Safe::SafeHash`
-
 
 
 
 ## Event Logging
 
 ...
+
 
 
 ## Storage
